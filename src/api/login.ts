@@ -4,9 +4,9 @@
  * @Author: LiWen
  * @Date: 2022-02-23 10:07:35
  * @LastEditors: LiWen
- * @LastEditTime: 2022-02-23 20:50:07
+ * @LastEditTime: 2022-02-24 14:38:49
  */
-import { ReturnResult } from "@/entity/sysEntity";
+import { ReturnResult, ReturnResultImg } from "@/entity/sysEntity";
 import request from "@/utils/request";
 import { AxiosPromise } from "axios";
 
@@ -57,7 +57,7 @@ export function logout() {
 }
 
 // 获取验证码
-export function getCodeImg() {
+export function getCodeImg(): AxiosPromise<ReturnResultImg> {
   return request({
     url: "/captchaImage",
     headers: {

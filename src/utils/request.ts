@@ -4,7 +4,7 @@
  * @Author: LiWen
  * @Date: 2022-02-23 14:09:10
  * @LastEditors: LiWen
- * @LastEditTime: 2022-02-23 14:20:02
+ * @LastEditTime: 2022-02-24 14:13:32
  */
 import axios from "axios";
 import {
@@ -151,7 +151,7 @@ service.interceptors.response.use(
       });
       return Promise.reject("error");
     } else {
-      return Promise.resolve(res.data);
+      return Promise.resolve(res);
     }
   },
   (error) => {

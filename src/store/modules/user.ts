@@ -4,12 +4,13 @@
  * @Author: LiWen
  * @Date: 2022-02-23 19:37:10
  * @LastEditors: LiWen
- * @LastEditTime: 2022-02-23 20:59:40
+ * @LastEditTime: 2022-02-24 14:39:33
  */
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import defAva from '@/assets/images/profile.jpg'
-import { ReturnResult } from "@/entity/sysEntity"
+import { ReturnResult, ReturnResultUser } from "@/entity/sysEntity"
+import { AxiosResponse } from 'axios'
 
 const user = {
     state: {
@@ -40,16 +41,15 @@ const user = {
 
     actions: {
         // 登录
-        Login({ commit }: any, userInfo: { username: string; password: any; code: any; uuid: any }) {
+        Login({ commit }: any, userInfo: { username: string; password: string; code: string; uuid: string }) {
             const username = userInfo.username.trim()
             const password = userInfo.password
             const code = userInfo.code
             const uuid = userInfo.uuid
             return new Promise<void>((resolve, reject) => {
-                login(username, password, code, uuid).then((res: any) => {
-                    const model: ReturnResult = res;
-                    setToken(model.token)
-                    commit('SET_TOKEN', model.token)
+                login(username, password, code, uuid).then((res: AxiosResponse<ReturnResult>) => {
+                    setToken(res.data.token)
+                    commit('SET_TOKEN', res.data.token)
                     resolve()
                 }).catch(error => {
                     reject(error)
@@ -60,13 +60,13 @@ const user = {
         // 获取用户信息
         GetInfo({ commit }) {
             return new Promise((resolve, reject) => {
-                getInfo().then((res: any) => {
-                    const user = res.user
+                getInfo().then((res: AxiosResponse<ReturnResultUser>) => {
+                    const user = res.data.user
                     const avatar = user.avatar == "" ? defAva : import.meta.env.VITE_APP_BASE_API + user.avatar;
 
-                    if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-                        commit('SET_ROLES', res.roles)
-                        commit('SET_PERMISSIONS', res.permissions)
+                    if (res.data.roles && res.data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
+                        commit('SET_ROLES', res.data.roles)
+                        commit('SET_PERMISSIONS', res.data.permissions)
                     } else {
                         commit('SET_ROLES', ['ROLE_DEFAULT'])
                     }

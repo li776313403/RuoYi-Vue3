@@ -4,7 +4,7 @@
  * @Author: LiWen
  * @Date: 2022-02-23 11:26:20
  * @LastEditors: LiWen
- * @LastEditTime: 2022-02-23 21:03:52
+ * @LastEditTime: 2022-02-24 14:51:06
  */
 
 /**
@@ -78,22 +78,77 @@ class Dic {
 }
 
 /**
- * @description:后端返回数据
+ * @description:后端返回通知数据
  */
-class ReturnResult {
+class ReturnResult<T = any> {
+  /**
+   * @description:状态码
+   */
+  code: number | -1;
+  /**
+   * @description:返回数据
+   */
+  data: T | null;
+  /**
+  * @description:提示信息
+  */
+  msg: string | '';
+  /**
+   * @description:token
+   */
+  token: string | '';
+}
+
+/**
+ * @description:后端返回验证码数据
+ */
+class ReturnResultImg {
+  /**
+  * @description:是否开启验证码
+  */
+  captchaOnOff: boolean | true;
+  /**
+   * @description:状态码
+   */
+  code: number | -1;
+  /**
+  * @description:图片信息
+  */
+  img: string | '';
+  /**
+  * @description:提示信息
+  */
+  msg: string | '';
+  /**
+  * @description:uuid
+  */
+  uuid: string | '';
+}
+
+/**
+ * @description:后端返回用户数据
+ */
+class ReturnResultUser {
   /**
  * @description:状态码
  */
   code: number | -1;
   /**
-* @description:提示信息
-*/
-  msg: string | '';
+  * @description:图片信息
+  */
+  img: string | '';
   /**
- * @description:token
- */
-  token: string | '';
+   * @description:权限信息
+   */
+  permissions: Array<string> | [];
+  /**
+   * @description:角色
+   */
+  roles: Array<string> | [];
+  /**
+   * @description:用户信息
+   */
+  user: any;
 }
 
-
-export { Dic, ReturnResult };
+export { Dic, ReturnResult, ReturnResultImg, ReturnResultUser };

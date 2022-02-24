@@ -4,13 +4,15 @@
  * @Author: LiWen
  * @Date: 2022-02-23 19:13:22
  * @LastEditors: LiWen
- * @LastEditTime: 2022-02-23 19:26:15
+ * @LastEditTime: 2022-02-24 14:43:53
  */
 import { constantRoutes } from '@/router'
 import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index.vue'
 import ParentView from '@/components/ParentView/index.vue'
 import InnerLink from '@/layout/components/InnerLink/index.vue'
+import { AxiosResponse } from 'axios'
+import { ReturnResult } from '@/entity/sysEntity'
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../../views/**/*.vue')
@@ -48,10 +50,10 @@ const permission = {
         GenerateRoutes({ commit }) {
             return new Promise(resolve => {
                 // 向后端请求路由数据
-                getRouters().then(res => {
-                    const sdata = JSON.parse(JSON.stringify(res.data))
-                    const rdata = JSON.parse(JSON.stringify(res.data))
-                    const defaultData = JSON.parse(JSON.stringify(res.data))
+                getRouters().then((res: AxiosResponse<ReturnResult>) => {
+                    const sdata = JSON.parse(JSON.stringify(res.data.data))
+                    const rdata = JSON.parse(JSON.stringify(res.data.data))
+                    const defaultData = JSON.parse(JSON.stringify(res.data.data))
                     const sidebarRoutes = filterAsyncRouter(sdata)
                     const rewriteRoutes = filterAsyncRouter(rdata, false, true)
                     const defaultRoutes = filterAsyncRouter(defaultData)
