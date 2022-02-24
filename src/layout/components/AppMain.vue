@@ -1,3 +1,11 @@
+<!--
+ * @Descripttion: 
+ * @version: v1.0
+ * @Author: LiWen
+ * @Date: 2022-01-24 18:24:22
+ * @LastEditors: LiWen
+ * @LastEditTime: 2022-02-14 16:42:07
+-->
 <template>
   <section class="app-main">
     <router-view v-slot="{ Component, route }">
@@ -11,11 +19,11 @@
 </template>
 
 <script setup>
-let store = useStore()
+let store = useStore();
 const route = useRoute()
 store.dispatch('tagsView/addCachedView', route)
 const cachedViews = computed(() => {
-    return store.state.tagsView.cachedViews
+    return store.state.tagsView.cachedViews;
 })
 </script>
 

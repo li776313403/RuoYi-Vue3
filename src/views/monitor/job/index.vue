@@ -353,6 +353,7 @@ function getList() {
 }
 /** 任务组名字典翻译 */
 function jobGroupFormat(row, column) {
+   console.log(sys_job_group.value);
   return proxy.selectDictLabel(sys_job_group.value, row.jobGroup);
 }
 /** 取消按钮 */
