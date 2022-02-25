@@ -4,7 +4,7 @@
  * @Author: LiWen
  * @Date: 2022-02-21 12:47:14
  * @LastEditors: LiWen
- * @LastEditTime: 2022-02-21 14:31:59
+ * @LastEditTime: 2022-02-25 15:57:25
  */
 import { defineConfig, loadEnv } from 'vite'
 import path from 'path'
@@ -40,9 +40,8 @@ export default defineConfig(({ mode, command }) => {
       host: true,
       open: true,
       proxy: {
-        // https://cn.vitejs.dev/config/#server-proxy
         '/dev-api': {
-          target: 'http://localhost:8081',
+          target: 'http://192.168.0.36:8081',
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/dev-api/, '')
         }

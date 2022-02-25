@@ -4,7 +4,7 @@
  * @Author: LiWen
  * @Date: 2022-02-23 21:02:28
  * @LastEditors: LiWen
- * @LastEditTime: 2022-02-23 21:03:30
+ * @LastEditTime: 2022-02-24 19:51:52
  */
 import { createWebHistory, createRouter } from 'vue-router'
 import Layout from '@/layout/index.vue'
@@ -27,7 +27,7 @@ import Layout from '@/layout/index.vue'
     breadcrumb: false               // 如果设置为false，则不会在breadcrumb面包屑中显示
     activeMenu: '/system/user'      // 当路由设置了该属性，则会高亮相对应的侧边栏。
   }
- */
+*/
 
 // 公共路由
 export const constantRoutes = [
@@ -99,58 +99,6 @@ export const constantRoutes = [
                 component: () => import('@/views/system/user/authRole.vue'),
                 name: 'AuthRole',
                 meta: { title: '分配角色', activeMenu: '/system/user' }
-            }
-        ]
-    },
-    {
-        path: '/system/role-auth',
-        component: Layout,
-        hidden: true,
-        children: [
-            {
-                path: 'user/:roleId(\\d+)',
-                component: () => import('@/views/system/role/authUser.vue'),
-                name: 'AuthUser',
-                meta: { title: '分配用户', activeMenu: '/system/role' }
-            }
-        ]
-    },
-    {
-        path: '/system/dict-data',
-        component: Layout,
-        hidden: true,
-        children: [
-            {
-                path: 'index/:dictId(\\d+)',
-                component: () => import('@/views/system/dict/data.vue'),
-                name: 'Data',
-                meta: { title: '字典数据', activeMenu: '/system/dict' }
-            }
-        ]
-    },
-    {
-        path: '/monitor/job-log',
-        component: Layout,
-        hidden: true,
-        children: [
-            {
-                path: 'index',
-                component: () => import('@/views/monitor/job/log.vue'),
-                name: 'JobLog',
-                meta: { title: '调度日志', activeMenu: '/monitor/job' }
-            }
-        ]
-    },
-    {
-        path: '/tool/gen-edit',
-        component: Layout,
-        hidden: true,
-        children: [
-            {
-                path: 'index',
-                component: () => import('@/views/tool/gen/editTable.vue'),
-                name: 'GenEdit',
-                meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
             }
         ]
     }

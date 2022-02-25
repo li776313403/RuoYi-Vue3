@@ -4,9 +4,11 @@
  * @Author: LiWen
  * @Date: 2022-02-23 09:35:46
  * @LastEditors: LiWen
- * @LastEditTime: 2022-02-23 10:01:52
+ * @LastEditTime: 2022-02-25 14:24:30
  */
 import { createApp } from "vue";
+
+import 'default-passive-events' // 优化页面滑动性能
 
 import Cookies from "js-cookie";
 

@@ -152,13 +152,6 @@
         >
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column
-            label="用户编号"
-            align="center"
-            key="userId"
-            prop="userId"
-            v-if="columns[0].visible"
-          />
-          <el-table-column
             label="用户名称"
             align="center"
             key="userName"
@@ -223,41 +216,17 @@
             class-name="small-padding fixed-width"
           >
             <template #default="scope">
-              <el-tooltip content="修改" placement="top">
+              <el-tooltip
+                v-if="scope.row.userId !== 1"
+                content="分配角色"
+                placement="top"
+              >
                 <el-button
-                  v-if="scope.row.userId !== 1"
-                  type="text"
-                  icon="Edit"
-                  @click="handleUpdate(scope.row)"
-                  v-hasPermi="['system:user:edit']"
-                ></el-button>
-              </el-tooltip>
-              <el-tooltip content="删除" placement="top">
-                <el-button
-                  v-if="scope.row.userId !== 1"
-                  type="text"
-                  icon="Delete"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:user:remove']"
-                ></el-button>
-              </el-tooltip>
-              <el-tooltip content="重置密码" placement="top">
-                <el-button
-                  v-if="scope.row.userId !== 1"
-                  type="text"
-                  icon="Key"
-                  @click="handleResetPwd(scope.row)"
-                  v-hasPermi="['system:user:resetPwd']"
-                ></el-button>
-              </el-tooltip>
-              <el-tooltip content="分配角色" placement="top">
-                <el-button
-                  v-if="scope.row.userId !== 1"
                   type="text"
                   icon="CircleCheck"
                   @click="handleAuthRole(scope.row)"
                   v-hasPermi="['system:user:edit']"
-                ></el-button>
+                />
               </el-tooltip>
             </template>
           </el-table-column>
@@ -469,9 +438,9 @@
   </div>
 </template>
 
-<script setup name="User">
+<script lang="ts" setup name="User">
 import { getToken } from "@/utils/auth";
-import { treeselect } from "@/api/system/dept";
+import { treeselect as deptSelect } from "@/api/system/dept";
 import {
   changeUserStatus,
   listUser,
@@ -481,26 +450,39 @@ import {
   updateUser,
   addUser,
 } from "@/api/system/user";
+import { useRouter } from "vue-router";
+import { getCurrentInstance, reactive, ref, toRefs, watch } from "vue";
+import { AxiosResponse } from "axios";
+import { ReturnResult, SysUser } from "@/entity/sysEntity";
+import {
+  TreeSelect as deptSelectEneity,
+  TableColumnInfo,
+} from "@/entity/pageEntity";
 
 const router = useRouter();
-const { proxy } = getCurrentInstance();
+let proxy: any;
+const instance = getCurrentInstance();
+if (instance) {
+  proxy = instance.proxy;
+}
+
 const { sys_normal_disable, sys_user_sex } = proxy.useDict(
   "sys_normal_disable",
   "sys_user_sex"
 );
 
-const userList = ref([]);
+const userList = ref<Array<SysUser>>([]);
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
-const ids = ref([]);
+const ids = ref<Array<number>>([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
 const deptName = ref("");
-const deptOptions = ref(undefined);
+const deptOptions = ref<Array<deptSelectEneity>>([]);
 const initPassword = ref(undefined);
 const postOptions = ref([]);
 const roleOptions = ref([]);
@@ -520,7 +502,7 @@ const upload = reactive({
   url: import.meta.env.VITE_APP_BASE_API + "system/user/importData",
 });
 // 列显隐信息
-const columns = ref([
+const columns = ref<Array<TableColumnInfo>>([
   { key: 0, label: `用户编号`, visible: true },
   { key: 1, label: `用户名称`, visible: true },
   { key: 2, label: `用户昵称`, visible: true },
@@ -538,7 +520,7 @@ const data = reactive({
     userName: undefined,
     phonenumber: undefined,
     status: undefined,
-    deptId: undefined,
+    deptId: undefined as number | null | undefined,
   },
   rules: {
     userName: [
@@ -579,12 +561,16 @@ const data = reactive({
   },
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules } = toRefs<any>(data);
 
 /** 通过条件过滤节点  */
-const filterNode = (value, data) => {
+const filterNode = (value: string, data: deptSelectEneity): boolean => {
   if (!value) return true;
-  return data.label.indexOf(value) !== -1;
+  if (data.label) {
+    return data.label.indexOf(value) !== -1;
+  } else {
+    return false;
+  }
 };
 /** 根据名称筛选部门树 */
 watch(deptName, (val) => {
@@ -592,23 +578,34 @@ watch(deptName, (val) => {
 });
 /** 查询部门下拉树结构 */
 function getTreeselect() {
-  treeselect().then((response) => {
-    deptOptions.value = response.data;
-  });
+  deptSelect().then(
+    (res: AxiosResponse<ReturnResult<Array<deptSelectEneity>>>) => {
+      if (res.data.data) {
+        deptOptions.value = res.data.data;
+      } else {
+        deptOptions.value = [];
+      }
+    }
+  );
 }
 /** 查询用户列表 */
 function getList() {
   loading.value = true;
   listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then(
-    (res) => {
+    (res: AxiosResponse<ReturnResult<SysUser>>) => {
       loading.value = false;
-      userList.value = res.rows;
-      total.value = res.total;
+      if (res.data.rows && res.data.total) {
+        userList.value = res.data.rows;
+        total.value = res.data.total;
+      } else {
+        userList.value = [];
+        total.value = 0;
+      }
     }
   );
 }
 /** 节点单击事件 */
-function handleNodeClick(data) {
+function handleNodeClick(data: deptSelectEneity) {
   queryParams.value.deptId = data.id;
   handleQuery();
 }
@@ -624,7 +621,7 @@ function resetQuery() {
   handleQuery();
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
+function handleDelete(row: SysUser) {
   const userIds = row.userId || ids.value;
   proxy.$modal
     .confirm('是否确认删除用户编号为"' + userIds + '"的数据项？')
@@ -648,8 +645,8 @@ function handleExport() {
   );
 }
 /** 用户状态修改  */
-function handleStatusChange(row) {
-  let text = row.status === "0" ? "启用" : "停用";
+function handleStatusChange(row: SysUser) {
+  let text = row.status === 0 ? "启用" : "停用";
   proxy.$modal
     .confirm('确认要"' + text + '""' + row.userName + '"用户吗?')
     .then(function () {
@@ -659,29 +656,16 @@ function handleStatusChange(row) {
       proxy.$modal.msgSuccess(text + "成功");
     })
     .catch(function () {
-      row.status = row.status === "0" ? "1" : "0";
+      row.status = row.status === 0 ? 1 : 0;
     });
 }
-/** 更多操作 */
-function handleCommand(command, row) {
-  switch (command) {
-    case "handleResetPwd":
-      handleResetPwd(row);
-      break;
-    case "handleAuthRole":
-      handleAuthRole(row);
-      break;
-    default:
-      break;
-  }
-}
 /** 跳转角色分配 */
-function handleAuthRole(row) {
+function handleAuthRole(row: SysUser) {
   const userId = row.userId;
   router.push("/system/user-auth/role/" + userId);
 }
 /** 重置密码按钮操作 */
-function handleResetPwd(row) {
+function handleResetPwd(row: SysUser) {
   proxy
     .$prompt('请输入"' + row.userName + '"的新密码', "提示", {
       confirmButtonText: "确定",
@@ -691,25 +675,27 @@ function handleResetPwd(row) {
       inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
     })
     .then(({ value }) => {
-      resetUserPwd(row.userId, value).then((response) => {
+      resetUserPwd(row.userId, value).then(() => {
         proxy.$modal.msgSuccess("修改成功，新密码是：" + value);
       });
     })
     .catch(() => {});
 }
 /** 选择条数  */
-function handleSelectionChange(selection) {
-  ids.value = selection.map((item) => item.userId);
+function handleSelectionChange(selection: Array<SysUser>): void {
+  ids.value = selection
+    .filter((item) => item.deptId)
+    .map((item) => item.userId) as Array<number>;
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
 /** 导入按钮操作 */
-function handleImport() {
+function handleImport(): void {
   upload.title = "用户导入";
   upload.open = true;
 }
 /** 下载模板操作 */
-function importTemplate() {
+function importTemplate(): void {
   proxy.download(
     "system/user/importTemplate",
     {},
@@ -717,11 +703,11 @@ function importTemplate() {
   );
 }
 /**文件上传中处理 */
-const handleFileUploadProgress = (event, file, fileList) => {
+const handleFileUploadProgress = (): void => {
   upload.isUploading = true;
 };
 /** 文件上传成功处理 */
-const handleFileSuccess = (response, file, fileList) => {
+const handleFileSuccess = (response: ReturnResult) => {
   upload.open = false;
   upload.isUploading = false;
   proxy.$refs["uploadRef"].clearFiles();
@@ -742,9 +728,15 @@ function submitFileForm() {
 function initTreeData() {
   // 判断部门的数据是否存在，存在不获取，不存在则获取
   if (deptOptions.value === undefined) {
-    treeselect().then((response) => {
-      deptOptions.value = response.data;
-    });
+    deptSelect().then(
+      (response: AxiosResponse<ReturnResult<deptSelectEneity[]>>) => {
+        if (response.data.data) {
+          deptOptions.value = response.data.data;
+        } else {
+          deptOptions.value = [];
+        }
+      }
+    );
   }
 }
 /** 重置操作表单 */
@@ -774,25 +766,25 @@ function cancel() {
 function handleAdd() {
   reset();
   initTreeData();
-  getUser().then((response) => {
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
+  getUser().then((response: any) => {
+    postOptions.value = response.data.posts;
+    roleOptions.value = response.data.roles;
     open.value = true;
     title.value = "添加用户";
     form.password.value = initPassword.value;
   });
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+function handleUpdate(row: SysUser) {
   reset();
   initTreeData();
   const userId = row.userId || ids.value;
-  getUser(userId).then((response) => {
-    form.value = response.data;
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
-    form.value.postIds = response.postIds;
-    form.value.roleIds = response.roleIds;
+  getUser(userId).then((response: any) => {
+    form.value = response.data.data;
+    postOptions.value = response.data.posts;
+    roleOptions.value = response.data.roles;
+    form.value.postIds = response.data.postIds;
+    form.value.roleIds = response.data.roleIds;
     open.value = true;
     title.value = "修改用户";
     form.password = "";
@@ -800,16 +792,16 @@ function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["userRef"].validate((valid) => {
+  proxy.$refs["userRef"].validate((valid: boolean) => {
     if (valid) {
       if (form.value.userId != undefined) {
-        updateUser(form.value).then((response) => {
+        updateUser(form.value).then(() => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addUser(form.value).then((response) => {
+        addUser(form.value).then(() => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
