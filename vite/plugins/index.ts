@@ -4,7 +4,7 @@
  * @Author: LiWen
  * @Date: 2022-02-23 10:25:24
  * @LastEditors: LiWen
- * @LastEditTime: 2022-02-23 11:28:59
+ * @LastEditTime: 2022-02-25 16:23:59
  */
 import vue from "@vitejs/plugin-vue";
 
@@ -12,10 +12,10 @@ import createAutoImport from "./auto-import";
 import createSvgIcon from "./svg-icon";
 import createCompression from "./compression";
 import createSetupExtend from "./setup-extend";
-import { EnvDevelopment } from "../../src/entity/systemConfigEntity";
+import { EnvProduction } from "../../src/entity/systemConfigEntity";
 
 export default function createVitePlugins(
-  viteEnv: EnvDevelopment,
+  viteEnv: EnvProduction,
   isBuild: boolean = false
 ) {
   const vitePlugins = [vue()];

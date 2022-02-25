@@ -4,7 +4,7 @@
  * @Author: LiWen
  * @Date: 2022-02-23 09:35:46
  * @LastEditors: LiWen
- * @LastEditTime: 2022-02-25 14:24:30
+ * @LastEditTime: 2022-02-25 16:50:01
  */
 import { createApp } from "vue";
 
@@ -27,7 +27,7 @@ import plugins from "./plugins"; // plugins
 import { download } from "@/utils/request";
 
 // svg图标
-import "virtual:svg-icons-register";
+import 'virtual:svg-icons-register';
 import SvgIcon from "@/components/SvgIcon/index.vue";
 import elementIcons from "@/components/SvgIcon/svgicon";
 

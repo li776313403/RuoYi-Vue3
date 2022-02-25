@@ -25,8 +25,9 @@
         "strictFunctionTypes": false,
         "baseUrl": ".",
         "types": [
+            "vite-plugin-svg-icons/client",
             "vite/client",
-            "node"
+            "node",
         ],
         "typeRoots": [
             "./node_modules/@types/",

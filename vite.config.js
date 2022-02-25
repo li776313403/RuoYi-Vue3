@@ -1,10 +1,10 @@
 /*
- * @Descripttion: 
+ * @Descripttion:
  * @version: v1.0
  * @Author: LiWen
  * @Date: 2022-02-21 12:47:14
  * @LastEditors: LiWen
- * @LastEditTime: 2022-02-25 15:57:25
+ * @LastEditTime: 2022-02-25 16:14:53
  */
 import { defineConfig, loadEnv } from 'vite'
 import path from 'path'
