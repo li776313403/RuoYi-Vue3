@@ -483,9 +483,29 @@ const title = ref("");
 const dateRange = ref([]);
 const deptName = ref("");
 const deptOptions = ref<Array<deptSelectEneity>>([]);
-const initPassword = ref(undefined);
+const initPassword = ref<string | null | undefined>(undefined);
 const postOptions = ref([]);
 const roleOptions = ref([]);
+//自定义类
+class FormClass {
+  userId: number | null | undefined;
+  deptId: number | null | undefined;
+  userName: string | null | undefined;
+  nickName: string | null | undefined;
+  password: string | null | undefined;
+  phonenumber: string | null | undefined;
+  email: string | null | undefined;
+  sex: number | null | undefined;
+  status: number | null | undefined;
+  remark: string | null | undefined;
+  postIds: Array<number> | null | undefined;
+  roleIds: Array<number> | null | undefined;
+}
+class DataClass {
+  form: FormClass;
+  queryParams: any;
+  rules: any;
+}
 /*** 用户导入参数 */
 const upload = reactive({
   // 是否显示弹出层（用户导入）
@@ -513,7 +533,20 @@ const columns = ref<Array<TableColumnInfo>>([
 ]);
 
 const data = reactive({
-  form: {},
+  form: {
+    userId: undefined,
+    deptId: undefined,
+    userName: undefined,
+    nickName: undefined,
+    password: undefined,
+    phonenumber: undefined,
+    email: undefined,
+    sex: undefined,
+    status: 0,
+    remark: undefined,
+    postIds: [],
+    roleIds: [],
+  },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -561,7 +594,7 @@ const data = reactive({
   },
 });
 
-const { queryParams, form, rules } = toRefs<any>(data);
+const { queryParams, form, rules } = toRefs<DataClass>(data);
 
 /** 通过条件过滤节点  */
 const filterNode = (value: string, data: deptSelectEneity): boolean => {
@@ -750,7 +783,7 @@ function reset() {
     phonenumber: undefined,
     email: undefined,
     sex: undefined,
-    status: "0",
+    status: 0,
     remark: undefined,
     postIds: [],
     roleIds: [],
@@ -771,7 +804,9 @@ function handleAdd() {
     roleOptions.value = response.data.roles;
     open.value = true;
     title.value = "添加用户";
-    form.password.value = initPassword.value;
+    if (initPassword.value) {
+      form.value.password = initPassword.value;
+    }
   });
 }
 /** 修改按钮操作 */
@@ -787,7 +822,7 @@ function handleUpdate(row: SysUser) {
     form.value.roleIds = response.data.roleIds;
     open.value = true;
     title.value = "修改用户";
-    form.password = "";
+    form.value.password = "";
   });
 }
 /** 提交按钮 */
